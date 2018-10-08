@@ -16,18 +16,19 @@ from six.moves import cPickle as pickle
 import ImportData
 import DataCheckers
 import PrepareData
-import ModelJobs
+import LinearModel
 
 
 SKIP = True #skip checks
 SKIP_MERGE = True # skip Merge (set False for first time)
 SKIP_DUPLICATE = True #Skip duplicate search
+PICKLE_FILE = os.path.join(ImportData.DATA_ROOT,PrepareData.ALL_DATA_PATH)
+
 #Download
 train_filename= ImportData.maybe_download('notMNIST_large.tar.gz', 247336696)
 test_filename = ImportData.maybe_download('notMNIST_small.tar.gz', 8458043)
 
 #Extract the dataset
-
 
 train_folders = ImportData.maybe_extract(train_filename)
 test_folders = ImportData.maybe_extract(test_filename)
@@ -79,36 +80,22 @@ if not SKIP_MERGE:
     print('Testing',test_dataset.shape,test_labels.shape)
 
 #randomize the data. It's important to have the labels well shuffled for the training and test distributions to matc
-if not SKIP_MERGE:
+
     train_dataset, train_labels = PrepareData.randomize(train_dataset, train_labels)
     test_dataset, test_labels = PrepareData.randomize(test_dataset, test_labels)
     valid_dataset, valid_labels = PrepareData.randomize(valid_dataset, valid_labels)
 
-#problem 4
 
 #save the data for later reuse:
-
-pickle_file = os.path.join(ImportData.DATA_ROOT,PrepareData.ALL_DATA_PATH)
-
-def savePickleData(force:False):
-    if force or not os.path.exists(pickle_file):
-        try:
-            f = open(pickle_file,'wb')
-            save = {
-            'train_dataset':train_dataset,
-            'train_labels':train_labels,
-            'valid_dataset':valid_dataset,
-            'valid_labels':valid_labels,
-            'test_dataset':test_dataset,
-            'test_labels':test_labels,
-            }
-            pickle.dump(save,f,pickle.HIGHEST_PROTOCOL)
-            f.close()
-        except Exception as e:
-            print('Unable to save data to',pickle_file,':',e)
-            raise
-    return os.stat(pickle_file)
-print('Compressed pickle size',savePickleData(False).st_size)
+    save = {
+    'train_dataset':train_dataset,
+    'train_labels':train_labels,
+    'valid_dataset':valid_dataset,
+    'valid_labels':valid_labels,
+    'test_dataset':test_dataset,
+    'test_labels':test_labels,
+    }
+    print('Compressed pickle size',PrepareData.savePickleData(PICKLE_FILE,save,False).st_size)
 
 #problem 5
 print("problem 5: measure overlap between training,validation & test sample")
@@ -118,7 +105,7 @@ ALL_DATASETS = pickle.load(open(PrepareData.ALL_DATA_PATH,'rb'))
 if not SKIP_DUPLICATE:
     print(len(DataCheckers.findDuplicates( ALL_DATASETS['test_dataset'],ALL_DATASETS['valid_dataset'])[0]))
     print(len(DataCheckers.findDuplicates(ALL_DATASETS['valid_dataset'],ALL_DATASETS['train_dataset'])[0]))
-    print(len(DataCheckers.findDuplicates( ALL_DATASETS['test_dataset'], ALL_DATASETS['train_dataset'])[0]))
+    print(len(DataCheckers.findDuplicates( ALL_DATASETS['test_dataset'],ALL_DATASETS['train_dataset'])[0]))
 
 #Problem 6 train a simple model with different size training samples
 print("Problem 6 train a simple model with different size training samples")
@@ -127,5 +114,5 @@ print("Problem 6 train a simple model with different size training samples")
 #SAMPLE_SIZE = [100,1000,5000,10000,None] #None = no limit = full dataset
 SAMPLE_SIZE = [100,1000]
 MODEL = LogisticRegression()
-ModelJobs.trainBySamples(ALL_DATASETS,SAMPLE_SIZE,MODEL)
+LinearModel.trainBySamples(ALL_DATASETS,SAMPLE_SIZE,MODEL)
 print("Max size: "+str(len(ALL_DATASETS['train_dataset'])))

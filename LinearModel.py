@@ -13,7 +13,6 @@ def getScoreFromModel(train_dataset,train_labels,test_dataset,test_labels,model)
     test_flatten_dataset = np.array([x.flatten() for x in test_dataset])
     
     model.fit(train_flatten_dataset,train_labels)
-    
     return model.score(test_flatten_dataset,test_labels)
     
     

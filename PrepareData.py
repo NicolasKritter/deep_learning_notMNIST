@@ -118,3 +118,13 @@ def randomize(dataset, labels):
     shuffled_labels = labels[permutation]
     return shuffled_dataset, shuffled_labels
 
+def savePickleData(pickle_file,save,force:False):
+    if force or not os.path.exists(pickle_file):
+        try:
+            f = open(pickle_file,'wb')
+            pickle.dump(save,f,pickle.HIGHEST_PROTOCOL)
+            f.close()
+        except Exception as e:
+            print('Unable to save data to',pickle_file,':',e)
+            raise
+    return os.stat(pickle_file)
