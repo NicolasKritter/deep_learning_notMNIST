@@ -131,7 +131,7 @@ BATCH_SIZE = 128
 graph = tf.Graph()
 
 with graph.as_default():
-    
+    #placeholder: variables of the graph, name of the key  =  name of the variable
     #INPUT
     #Put training data in placeholvder with a training batch
     tf_train_dataset = tf.placeholder(tf.float32,shape=(BATCH_SIZE,IMAGE_SIZE*IMAGE_SIZE))
@@ -177,7 +177,7 @@ with tf.Session(graph=graph) as session:
         batch_data = train_dataset[offset:(offset+BATCH_SIZE),:]
         batch_labels = train_labels[offset:(offset+BATCH_SIZE),:]
         #Prepare a dictionary telling the session where to feed the minibatch
-        #Key! the placeholder node of the graph to be fed;
+        #Key! the placeholder node of the graph to be fed; (must match the placeholder variable name givin in the graph)
         #value: numpy array to feed it
         feed_dict = {tf_train_dataset:batch_data,tf_train_labels:batch_labels}
         _,run_loss,prediction = session.run([optimizer,loss,train_prediction],feed_dict=feed_dict)
