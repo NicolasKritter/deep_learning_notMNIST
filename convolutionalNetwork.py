@@ -158,7 +158,7 @@ DECAY_RATE=0.97
 
 NUM_HIDDEN = 512
 SEED=42
-print(train_size)
+
 with graph.as_default():
 
   # Input data.
@@ -178,7 +178,7 @@ with graph.as_default():
   layer3_weights = tf.Variable(tf.truncated_normal([IMAGE_SIZE // 4 * IMAGE_SIZE // 4 * 2*DEPTH, NUM_HIDDEN],stddev=0.1,seed=SEED))
   layer3_biases = tf.Variable(tf.constant(0.1, shape=[NUM_HIDDEN]))
   
-  layer4_weights = tf.Variable(tf.truncated_normal([512, NUM_LABELS],stddev=0.1,seed=SEED))
+  layer4_weights = tf.Variable(tf.truncated_normal([NUM_HIDDEN, NUM_LABELS],stddev=0.1,seed=SEED))
   layer4_biases = tf.Variable(tf.constant(0.1, shape=[NUM_LABELS]))
 
   def model(data, train=False):
@@ -225,3 +225,4 @@ with graph.as_default():
 
 #Problem 2:
 trainGraph(graph)
+#94.4%
